@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+
+{% block title %}Saída de Material{% endblock %}
+
+{% block extra_style %}
+    .material-info {
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        display: none;
+    }
+    .quantidade-alerta {
+        color: #dc3545;
+        font-weight: bold;
+    }
+{% endblock %}
+
+{% block content %}
+    <h1 class="text-center mb-4">
+        <i class="fas fa-box-open text-danger"></i>
+        Saída de Material
+    </h1>
+
+    {% if messages %}
+    <div class="messages mb-4">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            <i class="fas fa-{% if message.tags == 'success' %}check-circle{% else %}exclamation-circle{% endif %}"></i>
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <form method="post" id="saidaForm">
+        {% csrf_token %}
+        
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label class="form-label"><i class="fas fa-barcode"></i> SAP</label>
+                <input type="text" class="form-control" name="sap" id="sap" required>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label"><i class="fas fa-calendar"></i> Data</label>
+                <input type="date" class="form-control" name="data" required value="{{ today|date:'Y-m-d' }}">
+            </div>
+        </div>
+
+        <div class="material-info mb-3" id="materialInfo">
+            <h5><i class="fas fa-info-circle"></i> Informações do Material</h5>
+            <p><strong>Descrição:</strong> <span id="descricaoMaterial"></span></p>
+            <p><strong>Quantidade em Estoque:</strong> <span id="quantidadeEstoque"></span></p>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label class="form-label"><i class="fas fa-sort-numeric-down"></i> Quantidade a Retirar</label>
+                <input type="number" class="form-control" name="quantidade" id="quantidade" required min="1">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label"><i class="fas fa-user-cog"></i> Nome do Técnico</label>
+                <input type="text" class="form-control" name="tecnico" required>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label"><i class="fas fa-comment"></i> Observação</label>
+            <textarea class="form-control" name="observacao" rows="3"></textarea>
+        </div>
+
+        <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-danger">
+                <i class="fas fa-minus-circle"></i> Registrar Saída
+            </button>
+        </div>
+    </form>
+
+    <div class="text-center mt-4">
+        <a href="{% url 'materiais:cadastro_movimento' %}" class="btn btn-outline-primary">
+            <i class="fas fa-exchange-alt"></i> Ir para Movimentações
+        </a>
+        <a href="{% url 'materiais:buscar' %}" class="btn btn-outline-secondary">
+            <i class="fas fa-search"></i> Buscar Material
+        </a>
+    </div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    document.getElementById('sap').addEventListener('blur', function() {
+        const sap = this.value;
+        if (sap) {
+            fetch(`/materiais/buscar-material-ajax/?sap=${sap}`)
+                .then(response => response.json())
+                .then(data => {
+                    const materialInfo = document.getElementById('materialInfo');
+                    if (data.success) {
+                        document.getElementById('descricaoMaterial').textContent = data.descricao;
+                        document.getElementById('quantidadeEstoque').textContent = data.quantidade_atual;
+                        materialInfo.style.display = 'block';
+                        
+                        // Atualizar o máximo permitido para retirada
+                        document.getElementById('quantidade').max = data.quantidade_atual;
+                    } else {
+                        materialInfo.style.display = 'none';
+                        alert('Material não encontrado!');
+                    }
+                });
+        }
+    });
+
+    // Validação da quantidade
+    document.getElementById('quantidade').addEventListener('input', function() {
+        const quantidade = parseInt(this.value);
+        const estoque = parseInt(document.getElementById('quantidadeEstoque').textContent);
+        
+        if (quantidade > estoque) {
+            alert('Quantidade maior que o estoque disponível!');
+            this.value = estoque;
+        }
+    });
+</script>
+{% endblock %} 

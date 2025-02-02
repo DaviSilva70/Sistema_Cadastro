@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block title %}Buscar Material{% endblock %}
+
+{% block extra_style %}
+.result-card {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 5px;
+    margin-top: 20px;
+}
+.result-card p {
+    margin-bottom: 10px;
+    padding: 8px;
+    border-radius: 4px;
+    background-color: white;
+}
+.not-found {
+    color: #dc3545;
+    padding: 15px;
+    background-color: #f8d7da;
+    border-radius: 5px;
+    margin-top: 20px;
+}
+.estoque-status {
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+.estoque-baixo {
+    color: #dc3545;
+    background-color: #f8d7da;
+}
+.estoque-ok {
+    color: #198754;
+    background-color: #d1e7dd;
+}
+{% endblock %}
+
+{% block content %}
+    <h1 class="text-center mb-4">
+        <i class="fas fa-search text-primary"></i>
+        Buscar Material por SAP
+    </h1>
+
+    <form method="get" class="mb-4">
+        <div class="input-group">
+            <input type="text" 
+                   class="form-control" 
+                   name="sap" 
+                   value="{{ sap }}" 
+                   placeholder="Digite o código SAP"
+                   autocomplete="off">
+            <button class="btn btn-primary" type="submit">
+                <i class="fas fa-search"></i> Buscar
+            </button>
+        </div>
+    </form>
+
+    {% if material %}
+        <div class="result-card">
+            <h2 class="h4 mb-3">
+                <i class="fas fa-clipboard-list text-success"></i> 
+                Resultado:
+            </h2>
+            <p><strong><i class="fas fa-barcode"></i> SAP:</strong> {{ material.sap }}</p>
+            <p><strong><i class="fas fa-file-alt"></i> Descrição:</strong> {{ material.descricao }}</p>
+            <p>
+                <strong><i class="fas fa-boxes"></i> Quantidade em Estoque:</strong> 
+                <span class="estoque-status {% if material.quantidade_atual <= 5 %}estoque-baixo{% else %}estoque-ok{% endif %}">
+                    {{ material.quantidade_atual }} unidades
+                </span>
+            </p>
+            <p><strong><i class="fas fa-clock"></i> Última atualização:</strong> {{ material.data_atualizacao|date:"d/m/Y H:i" }}</p>
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="{% url 'materiais:saida_material' %}?sap={{ material.sap }}" class="btn btn-danger">
+                <i class="fas fa-minus-circle"></i> Registrar Saída
+            </a>
+            <a href="{% url 'materiais:cadastro_movimento' %}?sap={{ material.sap }}" class="btn btn-success">
+                <i class="fas fa-plus-circle"></i> Registrar Entrada
+            </a>
+        </div>
+    {% elif sap %}
+        <div class="not-found">
+            <i class="fas fa-exclamation-triangle"></i>
+            Nenhum material encontrado com este SAP.
+        </div>
+    {% endif %}
+{% endblock %} 

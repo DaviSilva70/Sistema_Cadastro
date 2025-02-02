@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}Upload de Material{% endblock %}
+
+{% block extra_style %}
+    .instructions {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+    }
+    .messages {
+        list-style: none;
+        padding: 0;
+    }
+    .messages .success {
+        color: #198754;
+        padding: 10px;
+        background-color: #d1e7dd;
+        border-radius: 5px;
+    }
+    .messages .error {
+        color: #dc3545;
+        padding: 10px;
+        background-color: #f8d7da;
+        border-radius: 5px;
+    }
+{% endblock %}
+
+{% block content %}
+    <h1 class="text-center mb-4">
+        <i class="fas fa-file-excel text-success"></i> 
+        Upload de Arquivo XLSX
+    </h1>
+    
+    <div class="instructions">
+        <h3><i class="fas fa-info-circle text-primary"></i> Instruções:</h3>
+        <p>O arquivo Excel deve conter as seguintes colunas:</p>
+        <ul>
+            <li><i class="fas fa-table"></i> SAP/Código (pode ser: SAP, Código, COD, etc)</li>
+            <li><i class="fas fa-font"></i> Descrição (pode ser: Descrição, Material, Nome, etc)</li>
+        </ul>
+    </div>
+    
+    {% if messages %}
+    <ul class="messages mb-4">
+        {% for message in messages %}
+        <li class="{{ message.tags }}">
+            <i class="fas fa-{% if message.tags == 'success' %}check-circle{% else %}exclamation-circle{% endif %}"></i>
+            {{ message }}
+        </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data" class="mb-4">
+        {% csrf_token %}
+        <div class="input-group mb-3">
+            <input type="file" class="form-control" name="arquivo_xlsx" accept=".xlsx">
+            <button class="btn btn-primary" type="submit">
+                <i class="fas fa-upload"></i> Enviar
+            </button>
+        </div>
+    </form>
+{% endblock %} 

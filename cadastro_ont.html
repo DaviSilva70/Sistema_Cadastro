@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block title %}Cadastro de ONT{% endblock %}
+
+{% block extra_style %}
+    .form-ont {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+    }
+    .serial-info {
+        text-transform: uppercase;
+    }
+    .serial-textarea {
+        font-family: monospace;
+        text-transform: uppercase;
+    }
+    .serial-help {
+        font-size: 0.9em;
+        color: #6c757d;
+        margin-top: 5px;
+    }
+{% endblock %}
+
+{% block content %}
+    <h1 class="text-center mb-4">
+        <i class="fas fa-wifi text-primary"></i>
+        Cadastro de ONT
+    </h1>
+
+    {% if messages %}
+    <div class="messages mb-4">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            <i class="fas fa-{% if message.tags == 'success' %}check-circle{% else %}exclamation-circle{% endif %}"></i>
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <form method="post" class="form-ont">
+        {% csrf_token %}
+        
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label class="form-label"><i class="fas fa-barcode"></i> SAP</label>
+                <input type="text" class="form-control" name="sap" required>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label"><i class="fas fa-file-alt"></i> Número do Documento</label>
+                <input type="text" class="form-control" name="n_doc" required>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <label class="form-label"><i class="fas fa-truck-loading"></i> Carga</label>
+                <input type="text" class="form-control" name="carga" required>
+            </div>
+            <div class="col-md-8">
+                <label class="form-label"><i class="fas fa-hdd"></i> Nome do Equipamento</label>
+                <input type="text" class="form-control" name="nome_equipamento" required>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">
+                <i class="fas fa-fingerprint"></i> Números de Série
+                <small class="text-muted">(separados por vírgula)</small>
+            </label>
+            <textarea class="form-control serial-textarea" name="seriais" rows="5" required 
+                      placeholder="48575443DB6F32B0, 48575443DB6F32B1, 48575443DB6F32B2"></textarea>
+            <div class="serial-help">
+                <i class="fas fa-info-circle"></i>
+                Digite um serial por linha ou separe-os por vírgula. 
+                Exemplo: 48575443DB6F32B0, 48575443DB6F32B1
+            </div>
+        </div>
+
+        <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> Cadastrar ONTs
+            </button>
+        </div>
+    </form>
+
+    <div class="text-center mt-4">
+        <a href="{% url 'materiais:buscar_ont' %}" class="btn btn-outline-primary">
+            <i class="fas fa-search"></i> Buscar ONT
+        </a>
+    </div>
+{% endblock %} 

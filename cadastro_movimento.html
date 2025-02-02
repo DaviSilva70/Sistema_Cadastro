@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block title %}Cadastro de Movimento{% endblock %}
+
+{% block extra_style %}
+    .material-info {
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        display: none;
+    }
+{% endblock %}
+
+{% block content %}
+    <h1 class="text-center mb-4">
+        <i class="fas fa-exchange-alt text-primary"></i>
+        Cadastro de Movimento
+    </h1>
+
+    {% if messages %}
+    <div class="messages mb-4">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            <i class="fas fa-{% if message.tags == 'success' %}check-circle{% else %}exclamation-circle{% endif %}"></i>
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <form method="post" id="movimentoForm">
+        {% csrf_token %}
+        
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label class="form-label"><i class="fas fa-barcode"></i> SAP</label>
+                <input type="text" class="form-control" name="sap" id="sap" required>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label"><i class="fas fa-calendar"></i> Data</label>
+                <input type="date" class="form-control" name="data" required value="{{ today|date:'Y-m-d' }}">
+            </div>
+        </div>
+
+        <div class="material-info mb-3" id="materialInfo">
+            <h5><i class="fas fa-info-circle"></i> Informações do Material</h5>
+            <p><strong>Descrição:</strong> <span id="descricaoMaterial"></span></p>
+            <p><strong>Quantidade em Estoque:</strong> <span id="quantidadeEstoque"></span></p>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <label class="form-label"><i class="fas fa-exchange-alt"></i> Tipo</label>
+                <select class="form-control" name="tipo" id="tipo" required>
+                    <option value="">Selecione...</option>
+                    <option value="entrada">Entrada</option>
+                    <option value="saida">Saída</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label"><i class="fas fa-sort-numeric-up"></i> Quantidade</label>
+                <input type="number" class="form-control" name="quantidade" required min="1">
+            </div>
+            <div class="col-md-4" id="rcField" style="display: none;">
+                <label class="form-label"><i class="fas fa-file-invoice"></i> RC</label>
+                <input type="text" class="form-control" name="rc">
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label"><i class="fas fa-comment"></i> Observação</label>
+            <textarea class="form-control" name="observacao" rows="3"></textarea>
+        </div>
+
+        <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> Registrar Movimento
+            </button>
+        </div>
+    </form>
+
+    <div class="text-center mt-4">
+        <a href="{% url 'materiais:buscar' %}" class="btn btn-outline-primary">
+            <i class="fas fa-search"></i> Ir para busca
+        </a>
+    </div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    document.getElementById('sap').addEventListener('blur', function() {
+        const sap = this.value;
+        if (sap) {
+            fetch(`/materiais/buscar-material-ajax/?sap=${sap}`)
+                .then(response => response.json())
+                .then(data => {
+                    const materialInfo = document.getElementById('materialInfo');
+                    if (data.success) {
+                        document.getElementById('descricaoMaterial').textContent = data.descricao;
+                        document.getElementById('quantidadeEstoque').textContent = data.quantidade_atual;
+                        materialInfo.style.display = 'block';
+                    } else {
+                        materialInfo.style.display = 'none';
+                        alert('Material não encontrado!');
+                    }
+                });
+        }
+    });
+
+    document.getElementById('tipo').addEventListener('change', function() {
+        const rcField = document.getElementById('rcField');
+        rcField.style.display = this.value === 'entrada' ? 'block' : 'none';
+    });
+</script>
+{% endblock %} 

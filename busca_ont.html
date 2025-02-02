@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}Buscar ONT{% endblock %}
+
+{% block extra_style %}
+    .ont-card {
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 15px;
+        transition: all 0.3s ease;
+    }
+    .ont-card:hover {
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        transform: translateY(-2px);
+    }
+    .serial-info {
+        font-family: monospace;
+        font-size: 1.1em;
+        color: #004a8d;
+    }
+{% endblock %}
+
+{% block content %}
+    <h1 class="text-center mb-4">
+        <i class="fas fa-search text-primary"></i>
+        Buscar ONT
+    </h1>
+
+    <form method="get" class="mb-4">
+        <div class="input-group">
+            <input type="text" 
+                   class="form-control" 
+                   name="query" 
+                   value="{{ query }}" 
+                   placeholder="Digite o SAP, Serial ou Nº Documento"
+                   autocomplete="off">
+            <button class="btn btn-primary" type="submit">
+                <i class="fas fa-search"></i> Buscar
+            </button>
+        </div>
+    </form>
+
+    {% if query %}
+        {% if onts %}
+            {% for ont in onts %}
+                <div class="ont-card">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong><i class="fas fa-barcode"></i> SAP:</strong> {{ ont.sap }}</p>
+                            <p><strong><i class="fas fa-file-alt"></i> Nº Doc:</strong> {{ ont.n_doc }}</p>
+                            <p><strong><i class="fas fa-truck-loading"></i> Carga:</strong> {{ ont.carga }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong><i class="fas fa-hdd"></i> Equipamento:</strong> {{ ont.nome_equipamento }}</p>
+                            <p><strong><i class="fas fa-fingerprint"></i> Serial:</strong> <span class="serial-info">{{ ont.serial }}</span></p>
+                            <p><strong><i class="fas fa-calendar"></i> Cadastro:</strong> {{ ont.data_cadastro|date:"d/m/Y H:i" }}</p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle"></i>
+                Nenhuma ONT encontrada com os critérios informados.
+            </div>
+        {% endif %}
+    {% endif %}
+
+    <div class="text-center mt-4">
+        <a href="{% url 'materiais:cadastro_ont' %}" class="btn btn-outline-primary">
+            <i class="fas fa-plus-circle"></i> Cadastrar Nova ONT
+        </a>
+    </div>
+{% endblock %} 

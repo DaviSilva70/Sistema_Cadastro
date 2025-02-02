@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}Sistema de Materiais{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .content {
+            flex: 1;
+        }
+        .main-container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            background-color: white;
+        }
+        .navbar {
+            background-color: #004a8d;  /* Cor da Ligga */
+        }
+        .navbar-brand {
+            color: white !important;
+            font-weight: bold;
+        }
+        .nav-link {
+            color: rgba(255,255,255,0.9) !important;
+        }
+        .nav-link:hover {
+            color: white !important;
+        }
+        .footer {
+            background-color: #004a8d;
+            color: white;
+            padding: 20px 0;
+            margin-top: auto;
+        }
+        .social-icons a {
+            color: white;
+            margin: 0 10px;
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        .social-icons a:hover {
+            transform: translateY(-3px);
+            color: #ffd700;
+        }
+    </style>
+    <style>
+        {% block extra_style %}{% endblock %}
+    </style>
+</head>
+<body class="bg-light">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-boxes"></i> Sistema de Materiais
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <!-- Materiais -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="materiaisDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-box"></i> Materiais
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="{% url 'materiais:buscar' %}">
+                                    <i class="fas fa-search"></i> Buscar
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'materiais:upload' %}">
+                                    <i class="fas fa-file-upload"></i> Upload
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'materiais:cadastro_movimento' %}">
+                                    <i class="fas fa-exchange-alt"></i> Movimentações
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'materiais:saida_material' %}">
+                                    <i class="fas fa-box-open"></i> Saídas
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    
+                    <!-- ONTs -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="ontsDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-wifi"></i> ONTs
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="{% url 'materiais:cadastro_ont' %}">
+                                    <i class="fas fa-plus-circle"></i> Cadastrar
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'materiais:buscar_ont' %}">
+                                    <i class="fas fa-search"></i> Buscar
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Conteúdo -->
+    <div class="content">
+        <div class="main-container">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer text-center">
+        <div class="container">
+            <div class="social-icons mb-3">
+                <a href="https://www.instagram.com/liggatelecomunicacoes/" target="_blank" title="Instagram">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <a href="https://ligga.gupy.io/" target="_blank" title="Gupy">
+                    <i class="fas fa-briefcase"></i>
+                </a>
+                <a href="https://www.youtube.com/@LiggaTelecomunicacoes" target="_blank" title="YouTube">
+                    <i class="fab fa-youtube"></i>
+                </a>
+            </div>
+            <p class="mb-0">
+                &copy; {% now "Y" %} Todos os Direitos Reservados a Ligga Telecomunicações
+            </p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>
